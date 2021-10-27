@@ -1,7 +1,6 @@
 import argparse
 import logging
 import os.path
-from time import time
 
 from dataset import *
 from engine import *
@@ -76,49 +75,8 @@ def save(file_name, results):
         json.dump(results, f)
 
 
-def run_realtime_factor(dataset_folder, access_key):
-    test_file = os.path.join(
-        os.path.abspath(dataset_folder),
-        'legacy',
-        'test',
-        'sph',
-        'BillGates_2010.wav')
-    test_file_duration_sec = 1772.03
-
-    commands = {
-        Engines.MOZILLA_DEEP_SPEECH: {
-            "build": "",
-            "test": f"cd resources/engines/deep_speech/ && "
-                    f"./deepspeech --model deepspeech-0.9.3-models.pbmm "
-                    f"--scorer deepspeech-0.9.3-models.scorer "
-                    f"--audio '{test_file}'",
-        },
-        Engines.PICOVOICE_OCTOPUS: {
-            "build": f"cd resources/engines/octopus/ && "
-                     f"cmake -S demo/c/ -B demo/c/build && cmake --build demo/c/build ",
-            "test": f"cd resources/engines/octopus/ && "
-                    f"./demo/c/build/octopus_index_demo lib/linux/x86_64/libpv_octopus.so "
-                    f"lib/common/octopus_params.pv '{access_key}' "
-                    f"'{test_file}' ../../data/index.oif && "
-                    f"./demo/c/build/octopus_search_demo lib/linux/x86_64/libpv_octopus.so "
-                    f"lib/common/octopus_params.pv '{access_key}' index.oif 'picovoice'",
-        }
-    }
-
-    results = {}
-    for engine in commands.keys():
-        logging.info(f"{engine.value} is processing '{test_file}'...")
-        os.system(commands[engine]["build"])
-        start_sec = time()
-        os.system(commands[engine]["test"])
-        end_sec = time()
-        results[engine.value] = (end_sec - start_sec) / test_file_duration_sec
-
-    save('REAL_TIME_FACTOR', results)
-
-
 def run(engine_name, dataset, search_phrases, access_key='', bucket_name=''):
-    engine_handle = Engine.create(Engines[engine_name], access_key, bucket_name)
+    engine_handle = Engine.create(Engines[engine_name], access_key=access_key, bucket_name=bucket_name)
     logging.info('created %s engine' % str(engine_handle))
 
     results = dict()
@@ -174,32 +132,38 @@ def run(engine_name, dataset, search_phrases, access_key='', bucket_name=''):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--engines', nargs='+', choices=[engine.value for engine in Engines])
+    parser.add_argument(
+        '--engines',
+        nargs='+',
+        choices=[engine.value for engine in Engines],
+        default=[engine.value for engine in Engines]
+    )
     parser.add_argument('--dataset_folder', type=str, required=True)
-    parser.add_argument('--access_key', type=str, default='')
-    parser.add_argument('--google_bucket_name', type=str, default='')
-    parser.add_argument('--realtime_factor_test', action='store_true')
+    parser.add_argument('--access_key', type=str)
+    parser.add_argument('--google_bucket_name', type=str)
 
     args = parser.parse_args()
+
+    if Engines.PICOVOICE_OCTOPUS.value in args.engines and args.access_key is None:
+        print('Picovoice Octopus engine requires an AccessKey to perform the tests')
+        exit(1)
+
+    if Engines.GOOGLE_SPEECH_TO_TEXT.value in args.engines and args.google_bucket_name is None:
+        print('Google Speech-to-Text engine requires a Google Storage bucket name to perform the tests')
+        exit(1)
 
     dataset = Dataset.create('tedlium', args.dataset_folder)
     logging.info(f'loaded {str(dataset)} with {dataset.size_hours():.2f} hours of data')
 
-    if args.realtime_factor_test:
-        run_realtime_factor(args.dataset_folder, args.access_key)
-    else:
-        if len(args.engines) == 0:
-            print('The engine list is empty')
-            exit(1)
-        for engine in args.engines:
-            results = run(
-                engine_name=engine,
-                dataset=dataset,
-                search_phrases=SEARCH_PHRASES,
-                access_key=args.access_key,
-                bucket_name=args.google_bucket_name
-            )
-            save(file_name=f'{str(dataset)}-{engine}', results=results)
+    for engine in args.engines:
+        results = run(
+            engine_name=engine,
+            dataset=dataset,
+            search_phrases=SEARCH_PHRASES,
+            access_key=args.access_key,
+            bucket_name=args.google_bucket_name
+        )
+        save(file_name=f'{str(dataset)}-{engine}', results=results)
 
 
 if __name__ == '__main__':

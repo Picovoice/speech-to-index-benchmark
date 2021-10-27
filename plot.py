@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from engine import *
 from benchmark import CONFIDENCE_LEVELS
+import numpy as np
 
 GREY = (100 / 255, 100 / 255, 100 / 255)
 G_COLOR = (0, 153 / 255, 37 / 255)
@@ -27,16 +28,18 @@ def main():
         if spine.spine_type != 'bottom':
             spine.set_visible(False)
 
-    ave_missed_rate = list()
+    max_missed_rate = list()
+    min_missed_rate = list()
     colors_list = [M_COLOR, G_COLOR, PV_COLOR]
     markers_list = ['o', 's', 'D']
+    engines = ['MOZILLA_DEEP_SPEECH', 'GOOGLE_SPEECH_TO_TEXT', 'PICOVOICE_OCTOPUS']
     engine_labels = ['Mozilla DeepSpeech', 'Google Speech-to-Text', 'Picovoice Octopus']
-    for index, engine in enumerate(Engines):
+    for index, engine in enumerate(engines):
         path = os.path.join(
             os.path.dirname(__file__),
             'resources',
             'results',
-            '%s-%s.dat' % (args.dataset, engine.value)
+            '%s-%s.dat' % (args.dataset, engine)
         )
 
         with open(path) as f:
@@ -44,12 +47,13 @@ def main():
 
         false_rate = list()
         missed_rate = list()
-
         for confidence_level in CONFIDENCE_LEVELS:
             false_rate.append(results[str(confidence_level)][0])
             missed_rate.append(results[str(confidence_level)][1])
-        line_plot.plot(false_rate, missed_rate, label=engine.value, marker=markers_list[index], color=colors_list[index])
-        ave_missed_rate.append(sum(missed_rate) / len(false_rate))
+        line_plot.plot(false_rate, missed_rate, label=engine, marker=markers_list[index], color=colors_list[index])
+        print(missed_rate)
+        max_missed_rate.append(max(missed_rate))
+        min_missed_rate.append(min(missed_rate))
 
     line_plot.set_yticks(np.arange(10, 70, 10))
     line_plot.set_yticklabels(["%s%%" % str(x) for x in np.arange(10, 70, 10)])
@@ -60,12 +64,28 @@ def main():
     line_plot.axvline(1.05, linewidth=0.5, color='r', ls='-.')
     line_fig.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'false_alarm_vs_missed_detection.png'))
 
-    color = [GREY, GREY, PV_COLOR]
-    bar_plot.set_title('Average Missed Detection Rate\n')
+    bar_plot.set_title('Ranges for the missed detection rates\n')
     bar_plot.set_yticks([])
-    bar_plot.bar(engine_labels, ave_missed_rate, color=color)
-    for i in range(len(ave_missed_rate)):
-        bar_plot.text(i - 0.1, ave_missed_rate[i] + 2, '%.1f%%' % ave_missed_rate[i], color=color[i])
+    bar_plot.set_xticks([0, 1, 2])
+    bar_plot.set_xticklabels(engine_labels)
+    bar_plot.set_ylim(0, 70)
+    for index, engine in enumerate(engine_labels):
+        mean = (max_missed_rate[index] + min_missed_rate[index]) / 2
+        error = (max_missed_rate[index] - min_missed_rate[index] + 2) / 2
+        bar_plot.errorbar(
+            index,
+            mean,
+            yerr=error,
+            fmt='o',
+            color=colors_list[index],
+            ecolor=colors_list[index],
+            elinewidth=3,
+            capsize=10
+        )
+        bar_plot.text(index - 0.1, max_missed_rate[index] + 2, '%.1f%%' % max_missed_rate[index], color=colors_list[index])
+        bar_plot.text(index - 0.1, min_missed_rate[index] - 4, '%.1f%%' % min_missed_rate[index],
+                      color=colors_list[index])
+
     bar_fig.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'missed_detection_comparison.png'))
 
     rtf_result_path = os.path.join(os.path.dirname(__file__), 'resources', 'results', 'REAL_TIME_FACTOR.dat')

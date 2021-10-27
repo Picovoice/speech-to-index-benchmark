@@ -32,13 +32,13 @@ class Engine(object):
         raise NotImplementedError()
 
     @classmethod
-    def create(cls, engine_type, access_key='', bucket_name=''):
+    def create(cls, engine_type, **kwargs):
         if engine_type is Engines.GOOGLE_SPEECH_TO_TEXT:
-            return GoogleSpeechToText(bucket_name)
+            return GoogleSpeechToText(kwargs['bucket_name'])
         elif engine_type is Engines.MOZILLA_DEEP_SPEECH:
             return MozillaDeepSpeech()
         elif engine_type is Engines.PICOVOICE_OCTOPUS:
-            return PicovoiceOctopus(access_key)
+            return PicovoiceOctopus(kwargs['access_key'])
         else:
             raise ValueError(f"cannot create {cls.__name__} of type 'engine_type'")
 

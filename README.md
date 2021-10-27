@@ -2,7 +2,7 @@
 
 Made in Vancouver, Canada by [Picovoice](https://picovoice.ai)
 
-This is a minimalist and extensible framework for benchmarking different speech-to-index engines. It has been developed
+This is a minimalist and extensible framework for benchmarking different Speech-to-Index engines. It has been developed
 and tested on Ubuntu 20.04 (x86_64) using Python3.8.
 
 ## Table of Contents
@@ -36,23 +36,23 @@ indexes speech without relying on a text representation.
 
 ## Metrics
 
-This benchmark mainly considers three metrics: missed detection rate, false alarm rate, and real-time factor.
+This benchmark mainly considers three metrics: missed detection rate, false alarm per hour, and real-time factor.
 
-### Missed Detection and False Alarm Rate
+### Missed Detection and False Alarm Per Hour
 
-We measure the accuracy of the speech-to-index engines using false alarm per hour and missed detection rates. The false
+We measure the accuracy of the Speech-to-Index engines using false alarm per hour and missed detection rates. The false
 alarm per hour is measured as a number of false positives in an hour. Missed detection is measured as the percentage of search phrases inside an audio file that an engine misses incorrectly.
 
 ### Real Time Factor
 
 Real time factor (RTF) is measured as the ratio of CPU (processing) time to the length of the input speech file. An engine with lower RTF is more computationally efficient. We omit this metric for the cloud-based
-Google Speech-to-Text engine.
+Google speech-to-text engine.
 
-## Speech-to-Index Engines
+## Engines
 
 Since Octopus has no exact off-the-shelf counterpart that can search through audio files by indexing them, we use two well-known speech-to-text engines to transcript audio files first and then search inside the obtained text-based results.
 
-### Google Speech-to-Text
+### Google speech-to-text
 
 A cloud-based speech recognition engine offered by Google Cloud Platform. Find more information
 [here](https://cloud.google.com/speech-to-text/).
@@ -64,26 +64,26 @@ A cloud-based speech recognition engine offered by Google Cloud Platform. Find m
 
 ### Picovoice Octopus
 
-[Octopus](https://github.com/Picovoice/cheetah) is a speech-to-index engine developed using
+[Octopus](https://github.com/Picovoice/cheetah) is a Speech-to-Index engine developed using
 [Picovoice's](http://picovoice.ai/) proprietary deep learning technology, which directly indexes speech without relying
 on a text representation. It works offline and is supported on a growing number of platforms including Android, iOS,
 and [web](https://picovoice.ai/demos/audio-search/).
 
 ## Usage
 
-Below is information on how to use this framework to benchmark the speech-to-text engines.
+Below is information on how to use this framework to benchmark the mentioned engines.
 
 1. Make sure that you have installed DeepSpeech on your machine by following the instructions on its official pages. Also make sure all the git submodules are updated.
 2. Install all required python packages by runnig `pip3 install -r requirements.txt` inside the terminal
 3. Run the `config.py` script in order to download and unpack DeepSpeech's models
    under [resources/engines/deepspeech](/resources/engines/deepspeech).
 4. Download [TED-LIUM Release 3](https://openslr.org/51/) and unpack it on your computer.
-5. For running Google Speech-to-Text, you need to sign up and setup permissions /
-   credentials according to its documentation. You also need to enable the 'Cloud Speech-to-Text' and 'Cloud storage' APIs
+5. For running Google speech-to-text, you need to sign up and setup permissions /
+   credentials according to its documentation. You also need to enable the 'Cloud speech-to-text' and 'Cloud storage' APIs
    and create a bucket for this benchmark. Running these services may incur fees.
 6. For running Octopus, you need to get an `AccessKey` from the [Picovoice Console](https://picovoice.ai/console/).
 
-### Missed Detection and False Alarm Rate Measurement
+### Missed Detection and False Alarm Per Hour Measurement
 
 These two metrics can be measured by running the following command from the root of the repository:
 
@@ -107,13 +107,14 @@ python3 benchmark.py --realtime_factor_test --dataset_folder {DATASET_FOLDER} --
 
 The benchmarking was performed on a Linux machine running Ubuntu 20.04 with 16GB of RAM and an Intel i7-10710U CPU running at 4.7 GHz.
 
-The figure below compares the average missed detection rate of speech-to-index engines. Octopus achieves the best performance by spotting search phrases almost two times better than its closest opponent.
+The figure below compares the upper and lower ranges of the missed detection rates for all engines.
+Octopus achieves the best performance by missing fewer occurrences of search phrases.
 
 ![](resources/figs/missed_detection_comparison.png)
 
 The figure below shows the false alarm per hour versus the missed detection rate for different confidence levels. `Mozilla DeepSpeech` does not provide the confidence level of the result in the same way that other engines deliver. Therefore, there is only one data point for it in the plot instead of a curve.
 
-In addition, as shown by a red line, for around 1 false alarm per hour, Octopus achieves 22% for the missed detection rate while Google Speech-to-Text acquires 30%.
+In addition, as shown by a red line, for around 1 false alarm per hour, Octopus achieves 22% for the missed detection rate while Google speech-to-text acquires 30%.
 
 ![](resources/figs/false_alarm_vs_missed_detection.png)
 
@@ -121,8 +122,3 @@ One important factor about Speech-to-Index engines is their processing speed. Th
 
 ![](resources/figs/realtime_factor_comparison.png)
 
-## License
-
-The benchmarking framework is freely available and can be used under the Apache 2.0 license.
-
-For commercial enquiries contact us via this [form](https://picovoice.ai/contact.html).
