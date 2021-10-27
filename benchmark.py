@@ -42,7 +42,7 @@ SEARCH_PHRASES = [
 ]
 
 
-class MatchResult:
+class MatchedResult:
     def __init__(self, match, phrase):
         self._start_sec = match.start_sec
         self._end_sec = match.end_sec
@@ -136,7 +136,7 @@ def run(engine_name, dataset, search_phrases, access_key='', bucket_name=''):
                 ref_matches = list()
                 for sentence in ref_transcript:
                     if any(search_phrase.lower() in word.lower() for word in sentence.content.split()):
-                        ref_matches.append(MatchResult(sentence, search_phrase))
+                        ref_matches.append(MatchedResult(sentence, search_phrase))
 
                 for ref_match in ref_matches:
                     num_total_ref_occurrence += ref_match.num_occurrence

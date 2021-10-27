@@ -40,7 +40,7 @@ class Engine(object):
         elif engine_type is Engines.PICOVOICE_OCTOPUS:
             return PicovoiceOctopus(access_key)
         else:
-            raise ValueError("cannot create %s of type '%s'" % (cls.__name__, engine_type))
+            raise ValueError(f"cannot create {cls.__name__} of type 'engine_type'")
 
 
 class PicovoiceOctopus(Engine):

@@ -25,7 +25,7 @@ class Dataset(object):
         if dataset_type == 'tedlium':
             return TEDLIUMRelease3(root_folder)
         else:
-            raise ValueError("cannot create %s of type '%s'" % (cls.__name__, dataset_type))
+            raise ValueError(f"cannot create {cls.__name__} of type 'dataset_type'")
 
 
 class TEDLIUMRelease3(Dataset):
