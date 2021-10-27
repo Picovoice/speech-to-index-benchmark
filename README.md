@@ -38,9 +38,9 @@ indexes speech without relying on a text representation.
 
 This benchmark mainly considers three metrics: missed detection rate, false alarm per hour, and real-time factor.
 
-### Missed Detection and False Alarm Per Hour
+### Missed Detection rate and False Alarm Per Hour
 
-We measure the accuracy of the Speech-to-Index engines using false alarm per hour and missed detection rates. The false
+We measure the accuracy of the Speech-to-Index engines using false alarm per hour and missed detection rate. The false
 alarm per hour is measured as a number of false positives in an hour. Missed detection is measured as the percentage of search phrases inside an audio file that an engine misses incorrectly.
 
 ### Real Time Factor
@@ -83,7 +83,7 @@ Below is information on how to use this framework to benchmark the mentioned eng
    and create a bucket for this benchmark. Running these services may incur fees.
 6. For running Octopus, you need to get an `AccessKey` from the [Picovoice Console](https://picovoice.ai/console/).
 
-### Missed Detection and False Alarm Per Hour Measurement
+### Missed Detection Rate and False Alarm Per Hour Measurement
 
 These two metrics can be measured by running the following command from the root of the repository:
 
