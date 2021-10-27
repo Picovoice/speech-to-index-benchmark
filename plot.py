@@ -33,7 +33,7 @@ def main():
     colors_list = [M_COLOR, G_COLOR, PV_COLOR]
     markers_list = ['o', 's', 'D']
     engines = ['MOZILLA_DEEP_SPEECH', 'GOOGLE_SPEECH_TO_TEXT', 'PICOVOICE_OCTOPUS']
-    engine_labels = ['Mozilla DeepSpeech', 'Google Speech-to-Text', 'Picovoice Octopus']
+    engine_labels = ['Mozilla DeepSpeech', 'Google speech-to-text', 'Picovoice Octopus']
     for index, engine in enumerate(engines):
         path = os.path.join(
             os.path.dirname(__file__),
@@ -51,7 +51,6 @@ def main():
             false_rate.append(results[str(confidence_level)][0])
             missed_rate.append(results[str(confidence_level)][1])
         line_plot.plot(false_rate, missed_rate, label=engine, marker=markers_list[index], color=colors_list[index])
-        print(missed_rate)
         max_missed_rate.append(max(missed_rate))
         min_missed_rate.append(min(missed_rate))
 
