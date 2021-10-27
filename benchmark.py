@@ -76,14 +76,14 @@ def save(file_name, results):
         json.dump(results, f)
 
 
-def run_realtime_factor(access_key):
+def run_realtime_factor(dataset_folder, access_key):
     test_file = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        'resources',
-        'engines',
-        'octopus',
-        'res/audio/multiple_keywords.wav')
-    test_file_duration_sec = 45.50
+        os.path.abspath(dataset_folder),
+        'legacy',
+        'test',
+        'sph',
+        'BillGates_2010.wav')
+    test_file_duration_sec = 1772.03
 
     commands = {
         Engines.MOZILLA_DEEP_SPEECH: {
@@ -91,7 +91,7 @@ def run_realtime_factor(access_key):
             "test": f"cd resources/engines/deep_speech/ && "
                     f"./deepspeech --model deepspeech-0.9.3-models.pbmm "
                     f"--scorer deepspeech-0.9.3-models.scorer "
-                    f"--audio {test_file}",
+                    f"--audio '{test_file}'",
         },
         Engines.PICOVOICE_OCTOPUS: {
             "build": f"cd resources/engines/octopus/ && "
@@ -99,7 +99,7 @@ def run_realtime_factor(access_key):
             "test": f"cd resources/engines/octopus/ && "
                     f"./demo/c/build/octopus_index_demo lib/linux/x86_64/libpv_octopus.so "
                     f"lib/common/octopus_params.pv '{access_key}' "
-                    f"res/audio/multiple_keywords.wav index.oif && "
+                    f"'{test_file}' ../../data/index.oif && "
                     f"./demo/c/build/octopus_search_demo lib/linux/x86_64/libpv_octopus.so "
                     f"lib/common/octopus_params.pv '{access_key}' index.oif 'picovoice'",
         }
@@ -174,7 +174,7 @@ def run(engine_name, dataset, search_phrases, access_key='', bucket_name=''):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--engines', nargs='+', choices=[engine.value for engine in Engines], required=True)
+    parser.add_argument('--engines', nargs='+', choices=[engine.value for engine in Engines])
     parser.add_argument('--dataset_folder', type=str, required=True)
     parser.add_argument('--access_key', type=str, default='')
     parser.add_argument('--google_bucket_name', type=str, default='')
@@ -186,8 +186,11 @@ def main():
     logging.info(f'loaded {str(dataset)} with {dataset.size_hours():.2f} hours of data')
 
     if args.realtime_factor_test:
-        run_realtime_factor(args.access_key)
+        run_realtime_factor(args.dataset_folder, args.access_key)
     else:
+        if len(args.engines) == 0:
+            print('The engine list is empty')
+            exit(1)
         for engine in args.engines:
             results = run(
                 engine_name=engine,

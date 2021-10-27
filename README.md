@@ -100,10 +100,12 @@ parameter are: `MOZILLA_DEEP_SPEECH`, `GOOGLE_SPEECH_TO_TEXT`, and `PICOVOICE_OC
 For measuring the real-time factors of the offline engine, run the following command:
 
 ```bash
-python3 benchmark.py --realtime_factor_test
+python3 benchmark.py --realtime_factor_test --dataset_folder {DATASET_FOLDER} --access_key {ACCESS_KEY}
 ```
 
 ## Results
+
+The benchmarking was performed on a Linux machine running Ubuntu 20.04 with 16GB of RAM and an Intel i7-10710U CPU running at 4.7 GHz.
 
 The figure below compares the average missed detection rate of speech-to-index engines. Octopus achieves the best performance by spotting search phrases almost two times better than its closest opponent.
 
@@ -115,7 +117,7 @@ In addition, as shown by a red line, for around 1 false alarm per hour, Octopus 
 
 ![](resources/figs/false_alarm_vs_missed_detection.png)
 
-One important factor about Speech-to-Index engines is their processing speed. The figure below depicts the time an engine requires for processing an hour of audio. This means Octopus is more than 7x faster than the other offline engine.
+One important factor about Speech-to-Index engines is their processing speed. The figure below depicts the time an engine requires for processing an hour of audio.
 
 ![](resources/figs/realtime_factor_comparison.png)
 
