@@ -72,7 +72,7 @@ and [web](https://picovoice.ai/demos/audio-search/).
 
 Below is information on how to use this framework to benchmark the mentioned engines.
 
-1. Make sure that you have installed DeepSpeech on your machine by following the instructions on its official pages.
+1. Make sure that you have DeepSpeech installed on your machine by following the instructions on its official pages.
 2. Install all required python packages by runnig `pip3 install -r requirements.txt` inside the terminal
 3. Run the `config.py` script in order to download and unpack DeepSpeech's models
    under [resources/engines/deepspeech](/resources/engines/deepspeech).
@@ -92,7 +92,7 @@ python3 benchmark.py --engines {ENGINES} --dataset_folder {DATASET_FOLDER} --acc
 
 where `{DATASET_FOLDER}` is the path to the folder in which the `TEDLIUM`
 dataset is extracted. The valid options for the `{ENGINES}`
-parameter are: `MOZILLA_DEEP_SPEECH`, `GOOGLE_SPEECH_TO_TEXT`, and `PICOVOICE_OCTOPUS`. `{ACCESS_KEY}` or `{GOOGLE_BUCKET_NAME}` should be entered as the input only if the selected engine is Octopus or Google Speech-to-text respectively.
+parameter are: `MOZILLA_DEEP_SPEECH`, `GOOGLE_SPEECH_TO_TEXT`, and `PICOVOICE_OCTOPUS`. `{ACCESS_KEY}` or `{GOOGLE_BUCKET_NAME}` should be entered as the input only if the selected engine is Octopus or Google speech-to-text respectively.
 
 ### Real Time Factor Measurement
 
@@ -113,7 +113,7 @@ Octopus achieves the best performance by missing fewer occurrences of search phr
 
 The figure below shows the false alarm per hour versus the missed detection rate for different confidence levels. `Mozilla DeepSpeech` does not provide the confidence level of the result in the same way that other engines deliver. Therefore, there is only one data point for it in the plot instead of a curve.
 
-In addition, as shown by a red line, for around 1 false alarm per hour, Octopus achieves 22% for the missed detection rate while Google speech-to-text acquires 30%.
+In addition, as shown by a red line at around 1 false alarms per hour, Octopus achieves 22% for the missed detection rate while Google speech-to-text achieves only 30%.
 
 ![](resources/figs/false_alarm_vs_missed_detection.png)
 

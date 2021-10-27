@@ -6,7 +6,7 @@ import soundfile
 
 
 class Dataset(object):
-    Transcript = namedtuple('sentence', ['start_sec', 'end_sec', 'content'])
+    Caption = namedtuple('transcript', ['start_sec', 'end_sec', 'content'])
 
     def size(self):
         raise NotImplementedError()
@@ -48,7 +48,7 @@ class TEDLIUMRelease3(Dataset):
                     with open(transcript_path, 'r') as f:
                         for line in f.readlines():
                             transcript.append(
-                                self.Transcript(
+                                self.Caption(
                                     start_sec=float(line.split()[3]),
                                     end_sec=float(line.split()[4]),
                                     content=' '.join(line.split()[6:])

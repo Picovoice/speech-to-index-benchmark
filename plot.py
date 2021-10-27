@@ -57,7 +57,7 @@ def main():
     line_plot.set_yticks(np.arange(10, 70, 10))
     line_plot.set_yticklabels(["%s%%" % str(x) for x in np.arange(10, 70, 10)])
     line_plot.set_ylabel('Missed detection ratio')
-    line_plot.set_xlabel('False alarm per hour')
+    line_plot.set_xlabel('False alarms per hour')
     line_plot.set_title('False Alarm vs Missed Detection Rate\n')
     line_plot.legend(labels=engine_labels, frameon=False)
     line_plot.axvline(1.05, linewidth=0.5, color='r', ls='-.')

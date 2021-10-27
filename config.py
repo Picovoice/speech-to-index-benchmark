@@ -26,6 +26,7 @@ def extract_file(path, name):
 
 def deep_speech_setup(engines_folder):
     deep_speech_folder = os.path.join(engines_folder, 'deep_speech')
+    os.makedirs(deep_speech_folder, exist_ok=True) 
     acoustic_model_name = 'deepspeech-0.9.3-models.pbmm'
     acoustic_model_url = f'https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/{acoustic_model_name}'
     download_file(acoustic_model_url, acoustic_model_name, deep_speech_folder)

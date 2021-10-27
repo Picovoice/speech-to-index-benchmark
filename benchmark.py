@@ -9,6 +9,7 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=loggin
 
 CONFIDENCE_LEVELS = [0.7, 0.8, 0.9, 0.95, 0.99]
 
+# for this test, it is assumed that search phrases have only one word without any space in between
 SEARCH_PHRASES = [
     'amazon',
     'america',
@@ -41,7 +42,7 @@ SEARCH_PHRASES = [
 ]
 
 
-class MatchedResult:
+class MatchedCounter(object):
     def __init__(self, match, phrase):
         self._start_sec = match.start_sec
         self._end_sec = match.end_sec
@@ -75,9 +76,9 @@ def save(file_name, results):
         json.dump(results, f)
 
 
-def run(engine_name, dataset, search_phrases, access_key='', bucket_name=''):
+def run(engine_name, dataset, search_phrases, access_key=None, bucket_name=None):
     engine_handle = Engine.create(Engines[engine_name], access_key=access_key, bucket_name=bucket_name)
-    logging.info('created %s engine' % str(engine_handle))
+    logging.info(f'created {str(engine_handle)} engine')
 
     results = dict()
 
@@ -94,7 +95,7 @@ def run(engine_name, dataset, search_phrases, access_key='', bucket_name=''):
                 ref_matches = list()
                 for sentence in ref_transcript:
                     if any(search_phrase.lower() in word.lower() for word in sentence.content.split()):
-                        ref_matches.append(MatchedResult(sentence, search_phrase))
+                        ref_matches.append(MatchedCounter(sentence, search_phrase))
 
                 for ref_match in ref_matches:
                     num_total_ref_occurrence += ref_match.num_occurrence
