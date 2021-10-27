@@ -12,12 +12,15 @@ and tested on Ubuntu 20.04 (x86_64) using Python3.8.
   - [Background](#background)
   - [Data](#data)
   - [Metrics](#metrics)
-    - [Missed detection and false alarm rate](#missed-detection-and-false-alarm-rate)
-  - [Speech-to-Text Engines](#speech-to-text-engines)
+    - [Missed Detection and False Alarm Rate](#missed-detection-and-false-alarm-rate)
+    - [Real Time Factor](#real-time-factor)
+  - [Speech-to-Index Engines](#speech-to-index-engines)
     - [Google Speech-to-Text](#google-speech-to-text)
     - [Mozilla DeepSpeech](#mozilla-deepspeech)
     - [Picovoice Octopus](#picovoice-octopus)
   - [Usage](#usage)
+    - [Missed Detection and False Alarm Rate Measurement](#missed-detection-and-false-alarm-rate-measurement)
+    - [Real Time Factor Measurement](#real-time-factor-measurement)
   - [Results](#results)
   - [License](#license)
 
@@ -33,16 +36,21 @@ indexes speech without relying on a text representation.
 
 ## Metrics
 
-This benchmark mainly considers two metrics: missed detection and false alarm rate
+This benchmark mainly considers three metrics: missed detection rate, false alarm rate, and real-time factor.
 
-### Missed detection and false alarm rate
+### Missed Detection and False Alarm Rate
 
 We measure the accuracy of the speech-to-index engines using false alarm per hour and missed detection rates. The false
 alarm per hour is measured as a number of false positives in an hour. Missed detection is measured as the percentage of search phrases inside an audio file that an engine misses incorrectly.
 
-## Speech-to-Text Engines
+### Real Time Factor
 
-Since Octopus has no exact off-the-shelf counterpart, we use two well-known speech-to-text engines for comparison.
+Real time factor (RTF) is measured as the ratio of CPU (processing) time to the length of the input speech file. An engine with lower RTF is more computationally efficient. We omit this metric for the cloud-based
+Google Speech-to-Text engine.
+
+## Speech-to-Index Engines
+
+Since Octopus has no exact off-the-shelf counterpart that can search through audio files by indexing them, we use two well-known speech-to-text engines to transcript audio files first and then search inside the obtained text-based results.
 
 ### Google Speech-to-Text
 
@@ -65,17 +73,19 @@ and [web](https://picovoice.ai/demos/audio-search/).
 
 Below is information on how to use this framework to benchmark the speech-to-text engines.
 
-1. Make sure that you have installed DeepSpeech on your machine by following the instructions on its official pages.
-2. Run the `config.py` script in order to download and unpack DeepSpeech's models
+1. Make sure that you have installed DeepSpeech on your machine by following the instructions on its official pages. Also make sure all the git submodules are updated.
+2. Install all required python packages by runnig `pip3 install -r requirements.txt` inside the terminal
+3. Run the `config.py` script in order to download and unpack DeepSpeech's models
    under [resources/engines/deepspeech](/resources/engines/deepspeech).
-3. Download [TED-LIUM Release 3](https://openslr.org/51/) and unpack it on your computer.
-4. For running Google Speech-to-Text, you need to sign up and setup permissions /
+4. Download [TED-LIUM Release 3](https://openslr.org/51/) and unpack it on your computer.
+5. For running Google Speech-to-Text, you need to sign up and setup permissions /
    credentials according to its documentation. You also need to enable the 'Cloud Speech-to-Text' and 'Cloud storage' APIs
    and create a bucket for this benchmark. Running these services may incur fees.
-5. For running Octopus, you need to get an `AccessKey` from the [Picovoice Console](https://picovoice.ai/console/).
+6. For running Octopus, you need to get an `AccessKey` from the [Picovoice Console](https://picovoice.ai/console/).
 
+### Missed Detection and False Alarm Rate Measurement
 
-Missed detection and false alarm rate can be measured by running the following command from the root of the repository:
+These two metrics can be measured by running the following command from the root of the repository:
 
 ```bash
 python3 benchmark.py --engines {ENGINES} --dataset_folder {DATASET_FOLDER} --access_key {ACCESS_KEY} --google_bucket_name {GOOGLE_BUCKET_NAME}
@@ -84,6 +94,14 @@ python3 benchmark.py --engines {ENGINES} --dataset_folder {DATASET_FOLDER} --acc
 where `{DATASET_FOLDER}` is the path to the folder in which the `TEDLIUM`
 dataset is extracted. The valid options for the `{ENGINES}`
 parameter are: `MOZILLA_DEEP_SPEECH`, `GOOGLE_SPEECH_TO_TEXT`, and `PICOVOICE_OCTOPUS`. `{ACCESS_KEY}` or `{GOOGLE_BUCKET_NAME}` should be entered as the input only if the selected engine is Octopus or Google Speech-to-text respectively.
+
+### Real Time Factor Measurement
+
+For measuring the real-time factors of the offline engine, run the following command:
+
+```bash
+python3 benchmark.py --realtime_factor_test
+```
 
 ## Results
 
@@ -96,6 +114,9 @@ The figure below shows the false alarm per hour versus the missed detection rate
 In addition, as shown by a red line, for around 1 false alarm per hour, Octopus achieves 22% for the missed detection rate while Google Speech-to-Text acquires 30%.
 
 ![](resources/figs/false_alarm_vs_missed_detection.png)
+
+One important factor about Speech-to-Index engines is their processing speed. The figure below depicts the time an engine requires for processing an hour of audio. This means Octopus is more than 7x faster than the other offline engine.
+![](resources/figs/realtime_factor_comparison.png)
 
 ## License
 

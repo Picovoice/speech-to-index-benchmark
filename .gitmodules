@@ -1,0 +1,3 @@
+[submodule "resources/engines/octopus"]
+	path = resources/engines/octopus
+	url = https://github.com/Picovoice/octopus.git

@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import tarfile
 
 import requests
 
@@ -16,6 +17,13 @@ def download_file(url, name, folder):
                 shutil.copyfileobj(r.raw, f)
 
 
+def extract_file(path, name):
+    file_path = os.path.join(path, name)
+    print(f"Extracting '{file_path}'...")
+    with tarfile.open(file_path) as f:
+        f.extractall(path)
+
+
 def deep_speech_setup(engines_folder):
     deep_speech_folder = os.path.join(engines_folder, 'deep_speech')
     acoustic_model_name = 'deepspeech-0.9.3-models.pbmm'
@@ -24,6 +32,10 @@ def deep_speech_setup(engines_folder):
     language_model_name = 'deepspeech-0.9.3-models.scorer'
     language_model_url = f'https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/{language_model_name}'
     download_file(language_model_url, language_model_name, deep_speech_folder)
+    native_client_name = 'native_client.amd64.cpu.linux.tar.xz'
+    native_client_url = f'https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/{native_client_name}'
+    download_file(native_client_url, native_client_name, deep_speech_folder)
+    extract_file(deep_speech_folder, native_client_name)
 
 
 def main():

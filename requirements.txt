@@ -1,0 +1,7 @@
+pvoctopus=1.0.3
+deepspeech=0.9.3
+soundfile
+numpy
+google-cloud
+requests
+librosa

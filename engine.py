@@ -111,6 +111,9 @@ class GoogleSpeechToText(Engine):
                 json.dump(response_dict, f)
 
         matches = list()
+        # The confidence value in Google Speech-to-Text is for the entire sentence, and it rarely goes higher than 0.95
+        # Therefore setting this parameter to larger values leads to only drastically more missed detection without
+        # any noticeable gain in reducing false alarms
         if confidence_threshold > 0.95:
             confidence_threshold = 0.95
         for transcript in transcripts:

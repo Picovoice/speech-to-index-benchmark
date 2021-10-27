@@ -67,6 +67,26 @@ def main():
     for i in range(len(ave_missed_rate)):
         bar_plot.text(i - 0.1, ave_missed_rate[i] + 2, '%.1f%%' % ave_missed_rate[i], color=color[i])
     bar_fig.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'missed_detection_comparison.png'))
+
+    rtf_result_path = os.path.join(os.path.dirname(__file__), 'resources', 'results', 'REAL_TIME_FACTOR.dat')
+    if os.path.isfile(rtf_result_path):
+        color = [GREY, PV_COLOR]
+        engine_labels = ['Mozilla DeepSpeech', 'Picovoice Octopus']
+        bar_fig_rtf, bar_plot_rtf = plt.subplots()
+        for spine in plt.gca().spines.values():
+            if spine.spine_type != 'bottom':
+                spine.set_visible(False)
+
+        with open(rtf_result_path) as f:
+            results = json.load(f)
+
+        rtf_list = [element * 60 for element in results.values()]
+        bar_plot_rtf.set_title('Process time for an hour of audio\n')
+        bar_plot_rtf.set_yticks([])
+        bar_plot_rtf.bar(engine_labels, rtf_list, color=color)
+        for i in range(len(rtf_list)):
+            bar_plot_rtf.text(i - 0.1, rtf_list[i] + 2, '%.1f min' % rtf_list[i], color=color[i])
+        bar_fig_rtf.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'realtime_factor_comparison.png'))
     plt.show()
 
 
