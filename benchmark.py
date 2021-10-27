@@ -5,7 +5,8 @@ import os.path
 from dataset import *
 from engine import *
 
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
+logging.basicConfig(
+    format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 
 CONFIDENCE_LEVELS = [0.7, 0.8, 0.9, 0.95, 0.99]
 
@@ -42,15 +43,17 @@ SEARCH_PHRASES = [
 ]
 
 
-class MatchedCounter(object):
-    def __init__(self, match, phrase):
-        self._start_sec = match.start_sec
-        self._end_sec = match.end_sec
-        self._content = match.content
-        self._num_occurrence = sum([phrase.lower() in word for word in match.content.strip('\n ').lower().split()])
+class CaptionMetadata(object):
+    def __init__(self, caption, phrase):
+        self._start_sec = caption.start_sec
+        self._end_sec = caption.end_sec
+        self._content = caption.content
+        self._num_occurrence = sum(
+            [phrase.lower() in word for word in caption.content.strip('\n ').lower().split()])
+        self._num_found = 0
 
-    def matched(self):
-        self._num_occurrence -= 1
+    def found(self):
+        self._num_found += 1
 
     @property
     def start_sec(self):
@@ -63,6 +66,10 @@ class MatchedCounter(object):
     @property
     def num_occurrence(self):
         return self._num_occurrence
+
+    @property
+    def num_missed(self):
+        return self._num_occurrence - self._num_found
 
 
 def save(file_name, results):
@@ -77,7 +84,8 @@ def save(file_name, results):
 
 
 def run(engine_name, dataset, search_phrases, access_key=None, bucket_name=None):
-    engine_handle = Engine.create(Engines[engine_name], access_key=access_key, bucket_name=bucket_name)
+    engine_handle = Engine.create(
+        Engines[engine_name], access_key=access_key, bucket_name=bucket_name)
     logging.info(f'created {str(engine_handle)} engine')
 
     results = dict()
@@ -89,34 +97,38 @@ def run(engine_name, dataset, search_phrases, access_key=None, bucket_name=None)
         num_total_ref_occurrence = 0
 
         for i in range(dataset.size()):
-            path, ref_transcript = dataset.get(i)
+            path, captions = dataset.get(i)
 
             for search_phrase in search_phrases:
                 ref_matches = list()
-                for sentence in ref_transcript:
-                    if any(search_phrase.lower() in word.lower() for word in sentence.content.split()):
-                        ref_matches.append(MatchedCounter(sentence, search_phrase))
+                for caption in captions:
+                    if any(search_phrase.lower() in word.lower() for word in caption.content.split()):
+                        ref_matches.append(
+                            CaptionMetadata(caption, search_phrase))
 
-                for ref_match in ref_matches:
-                    num_total_ref_occurrence += ref_match.num_occurrence
+                for caption_metadata in ref_matches:
+                    num_total_ref_occurrence += caption_metadata.num_occurrence
 
-                matches = engine_handle.search(
+                engine_matches = engine_handle.search(
                     path=path,
                     search_phrase=search_phrase,
                     confidence_threshold=confidence_level
                 )
 
-                for match in matches:
-                    matched = [occurrence for occurrence in ref_matches if
-                               match.start_sec > (occurrence.start_sec - 1) and match.end_sec < (
-                                       occurrence.end_sec + 1)]
-                    if len(matched) > 0:
-                        matched[0].matched()
-                    else:
+                eps_sec = 1
+                for match in engine_matches:
+                    is_found = False
+                    for caption_metadata in ref_matches:
+                        if match.start_sec > (caption_metadata.start_sec - eps_sec) \
+                                and match.end_sec < (caption_metadata.end_sec + eps_sec):
+                            caption_metadata.found()
+                            is_found = True
+                            break
+                    if is_found is False:
                         num_false_alarm += 1
 
-                for ref_match in ref_matches:
-                    num_missed_detection += ref_match.num_occurrence
+                for caption_metadata in ref_matches:
+                    num_missed_detection += caption_metadata.num_missed
 
         false_alarm_per_hour = float(num_false_alarm) / dataset.size_hours()
         if num_total_ref_occurrence == 0:
@@ -154,7 +166,8 @@ def main():
         exit(1)
 
     dataset = Dataset.create('tedlium', args.dataset_folder)
-    logging.info(f'loaded {str(dataset)} with {dataset.size_hours():.2f} hours of data')
+    logging.info(
+        f'loaded {str(dataset)} with {dataset.size_hours():.2f} hours of data')
 
     for engine in args.engines:
         results = run(
