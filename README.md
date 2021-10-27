@@ -116,6 +116,7 @@ In addition, as shown by a red line, for around 1 false alarm per hour, Octopus 
 ![](resources/figs/false_alarm_vs_missed_detection.png)
 
 One important factor about Speech-to-Index engines is their processing speed. The figure below depicts the time an engine requires for processing an hour of audio. This means Octopus is more than 7x faster than the other offline engine.
+
 ![](resources/figs/realtime_factor_comparison.png)
 
 ## License
