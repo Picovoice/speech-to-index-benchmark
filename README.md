@@ -12,17 +12,16 @@ and tested on Ubuntu 20.04 (x86_64) using Python3.8.
   - [Background](#background)
   - [Data](#data)
   - [Metrics](#metrics)
-    - [Missed Detection and False Alarm Rate](#missed-detection-and-false-alarm-rate)
+    - [Missed Detection rate and False Alarm Per Hour](#missed-detection-rate-and-false-alarm-per-hour)
     - [Real Time Factor](#real-time-factor)
-  - [Speech-to-Index Engines](#speech-to-index-engines)
-    - [Google Speech-to-Text](#google-speech-to-text)
+  - [Engines](#engines)
+    - [Google speech-to-text](#google-speech-to-text)
     - [Mozilla DeepSpeech](#mozilla-deepspeech)
     - [Picovoice Octopus](#picovoice-octopus)
   - [Usage](#usage)
-    - [Missed Detection and False Alarm Rate Measurement](#missed-detection-and-false-alarm-rate-measurement)
+    - [Missed Detection Rate and False Alarm Per Hour Measurement](#missed-detection-rate-and-false-alarm-per-hour-measurement)
     - [Real Time Factor Measurement](#real-time-factor-measurement)
   - [Results](#results)
-  - [License](#license)
 
 ## Background
 
@@ -73,7 +72,7 @@ and [web](https://picovoice.ai/demos/audio-search/).
 
 Below is information on how to use this framework to benchmark the mentioned engines.
 
-1. Make sure that you have installed DeepSpeech on your machine by following the instructions on its official pages. Also make sure all the git submodules are updated.
+1. Make sure that you have installed DeepSpeech on your machine by following the instructions on its official pages.
 2. Install all required python packages by runnig `pip3 install -r requirements.txt` inside the terminal
 3. Run the `config.py` script in order to download and unpack DeepSpeech's models
    under [resources/engines/deepspeech](/resources/engines/deepspeech).
@@ -97,10 +96,10 @@ parameter are: `MOZILLA_DEEP_SPEECH`, `GOOGLE_SPEECH_TO_TEXT`, and `PICOVOICE_OC
 
 ### Real Time Factor Measurement
 
-For measuring the real-time factors of the offline engine, run the following command:
+Make sure all the git submodules are updated. Then, run the following command:
 
 ```bash
-python3 benchmark.py --realtime_factor_test --dataset_folder {DATASET_FOLDER} --access_key {ACCESS_KEY}
+python3 realtime_factor.py --dataset_folder {DATASET_FOLDER} --access_key {ACCESS_KEY}
 ```
 
 ## Results
