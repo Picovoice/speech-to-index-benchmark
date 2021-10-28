@@ -61,7 +61,7 @@ def main():
     line_plot.set_title('False Alarm vs Missed Detection Rate\n')
     line_plot.legend(labels=engine_labels, frameon=False)
     line_plot.axvline(1.05, linewidth=0.5, color='r', ls='-.')
-    line_fig.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'false_alarm_vs_missed_detection.png'))
+    # line_fig.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'false_alarm_vs_missed_detection.png'))
 
     bar_plot.set_title('Ranges for the missed detection rates\n')
     bar_plot.set_yticks([])
@@ -85,7 +85,7 @@ def main():
         bar_plot.text(index - 0.1, min_missed_rate[index] - 4, '%.1f%%' % min_missed_rate[index],
                       color=colors_list[index])
 
-    bar_fig.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'missed_detection_comparison.png'))
+    # bar_fig.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'missed_detection_comparison.png'))
 
     rtf_result_path = os.path.join(os.path.dirname(__file__), 'resources', 'results', 'REAL_TIME_FACTOR.dat')
     if os.path.isfile(rtf_result_path):
@@ -102,7 +102,7 @@ def main():
         rtf_list = [element * 60 for element in results.values()]
         bar_plot_rtf.set_title('Process time for an hour of audio\n')
         bar_plot_rtf.set_yticks([])
-        bar_plot_rtf.bar(engine_labels, rtf_list, color=color)
+        bar_plot_rtf.bar(engine_labels, rtf_list, color=color, width=0.3)
         for i in range(len(rtf_list)):
             bar_plot_rtf.text(i - 0.1, rtf_list[i] + 2, '%.1f min' % rtf_list[i], color=color[i])
         bar_fig_rtf.savefig(os.path.join(os.path.dirname(__file__), 'resources', 'figs', 'realtime_factor_comparison.png'))

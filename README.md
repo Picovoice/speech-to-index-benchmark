@@ -107,17 +107,16 @@ python3 realtime_factor.py --dataset_folder {DATASET_FOLDER} --access_key {ACCES
 The benchmarking was performed on a Linux machine running Ubuntu 20.04 with 16GB of RAM and an Intel i7-10710U CPU running at 4.7 GHz.
 
 The figure below compares the upper and lower ranges of the missed detection rates for all engines.
-Octopus achieves the best performance by missing fewer occurrences of search phrases.
 
 ![](resources/figs/missed_detection_comparison.png)
 
-The figure below shows the false alarm per hour versus the missed detection rate for different confidence levels. `Mozilla DeepSpeech` does not provide the confidence level of the result in the same way that other engines deliver. Therefore, there is only one data point for it in the plot instead of a curve.
+The figure below shows the false alarm per hour versus the missed detection rate at different confidence levels. `Mozilla DeepSpeech` does not provide the confidence level of the result in the same way that other engines deliver. Therefore, there is only one data point for it in the plot instead of a curve.
 
-In addition, as shown by a red line at around 1 false alarms per hour, Octopus achieves 22% for the missed detection rate while Google speech-to-text achieves only 30%.
+In addition, as shown by a red line at around 1 false alarms per hour, Octopus achieves 22% for the missed detection rate while Google speech-to-text achieves 30%.
 
 ![](resources/figs/false_alarm_vs_missed_detection.png)
 
-One important factor about Speech-to-Index engines is their processing speed. The figure below depicts the time an engine requires for processing an hour of audio.
+The figure below depicts the time an engine requires for processing an hour of audio.
 
 ![](resources/figs/realtime_factor_comparison.png)
 
